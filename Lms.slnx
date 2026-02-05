@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BookServices/BookServices.csproj" />
+  <Project Path="MemberServices/MemberServices.csproj" />
+</Solution>
