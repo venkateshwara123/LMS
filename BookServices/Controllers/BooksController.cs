@@ -13,6 +13,7 @@ namespace BookServices.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly BookDbContext _context;

@@ -18,7 +18,7 @@ namespace MemberServices.Services
         };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("SuperSecretKey123"));
+                Encoding.UTF8.GetBytes("SuperSecretKey123SuperSecretKey123SuperSecretKey123"));
 
             var token = new JwtSecurityToken(
                 claims: claims,
