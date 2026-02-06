@@ -23,16 +23,22 @@ public class AuthController : ControllerBase
         _jwt = jwt;
     }
 
-    [HttpPost("register")]
+    [HttpPost("register",Name ="RegisterNewUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)] 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]   
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register(Users user)
     {
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
         _context.User.Add(user);
         await _context.SaveChangesAsync();
-        return Ok();
+        return Ok($"User Registered successfully.");
     }
 
-    [HttpPost("login")]
+    [HttpPost("login",Name ="GenerateJWTToken")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login(Users request)
     {
         var member = await _context.User.FirstOrDefaultAsync(x => x.Username == request.Username);

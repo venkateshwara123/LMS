@@ -13,7 +13,7 @@ namespace BookServices.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class BooksController : ControllerBase
     {
         private readonly BookDbContext _context;
@@ -25,28 +25,57 @@ namespace BookServices.Controllers
 
         // GET: api/Books
         [HttpGet]
+        [Route("All",Name ="GetAllBooks")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
             return await _context.Books.ToListAsync();
         }
 
         // GET: api/Books/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}",Name ="GetBooksById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Book>> GetBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
+            if (id <= 0)           
+                return BadRequest();            
+                var book = await _context.Books.FindAsync(id);
+                if (book == null)
+                {
+                    return NotFound($"The Book with Id:{id} not Found. Please Try with valid Id.");
+                }
+                return book;            
+        }
 
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            return book;
+        [HttpGet("{title:alpha}",Name = "GetBookByTitle")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<Book>> GetBookByName(String title)
+        {
+            if (string.IsNullOrEmpty(title.Trim()))
+                return BadRequest();
+                var book = await _context.Books.FirstOrDefaultAsync(n=>n.Title==title);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+                return book;            
         }
 
         // PUT: api/Books/5
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PutBook(int id, Book book)
         {
             if (id != book.Id)
@@ -76,38 +105,47 @@ namespace BookServices.Controllers
         }
 
         // POST: api/Books
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Book>> PostBook(Book book)
         {
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetBook", new { id = book.Id }, book);
         }
 
         // DELETE: api/Books/5
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+       // [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}",Name ="DeleteBookById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            if (id <= 0)
+             return BadRequest();            
+                var book = await _context.Books.FindAsync(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+                return NoContent();            
         }
-
+        //Method to fin the Book is Exists already or not
         private bool BookExists(int id)
         {
             return _context.Books.Any(e => e.Id == id);
         }
-        [Authorize(Roles = "Member")]
+       // [Authorize(Roles = "Member")]
         [HttpPost("{id}/reserve")]
         public async Task<IActionResult> ReserveBook(int id)
         {
