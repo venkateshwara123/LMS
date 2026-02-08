@@ -11,5 +11,7 @@ namespace BookServices.Models
         public int BookId { get; set; }
         [Required]
         public string Username { get; set; }
+
+        public Book Book { get; set; }
     }
 }
