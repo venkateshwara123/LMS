@@ -10,28 +10,34 @@ namespace MemberServices.Services
 {
     public class JwtService: IJwtService
     {
+        private readonly IConfiguration _config;
+
+        public JwtService(IConfiguration config)
+        {
+            _config = config;
+        }
         public string GenerateToken(Users user)
         {
-            byte[] SecretBytes = new byte[64];
-            using (var random=RandomNumberGenerator.Create())
+            var claims = new[]
             {
-                random.GetBytes(SecretBytes);
-            }
-            string SecretKey=Convert.ToBase64String(SecretBytes);
-                var claims = new[]
-                {
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Role, user.Role)
         };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(SecretKey));
+                Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+            );
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials:
-                    new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+                expires: DateTime.Now.AddMinutes(
+                    int.Parse(_config["Jwt:ExpiryMinutes"])
+                ),
+                signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);

@@ -13,7 +13,7 @@ namespace BookServices.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly BookDbContext _context;
@@ -69,7 +69,7 @@ namespace BookServices.Controllers
         }
 
         // PUT: api/Books/5
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,7 +105,7 @@ namespace BookServices.Controllers
         }
 
         // POST: api/Books
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -119,7 +119,7 @@ namespace BookServices.Controllers
         }
 
         // DELETE: api/Books/5
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}",Name ="DeleteBookById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -145,7 +145,7 @@ namespace BookServices.Controllers
         {
             return _context.Books.Any(e => e.Id == id);
         }
-       // [Authorize(Roles = "Member")]
+        [Authorize(Roles = "Member")]
         [HttpPost("{id}/reserve")]
         public async Task<IActionResult> ReserveBook(int id)
         {

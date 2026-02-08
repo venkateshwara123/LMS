@@ -17,10 +17,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJwtService,JwtService>();
 builder.Services.AddDbContext<AppDbContext>(options=>
 options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("MemberDB")));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
 {
-    options.TokenValidationParameters = new()
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -44,7 +44,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
