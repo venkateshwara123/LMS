@@ -29,7 +29,7 @@ namespace BookServices.Controllers
         public async Task<ActionResult<Book>> AddBookDetails(Book book)
         {
             if (book == null)
-                return BadRequest("Invalid Book Details");
+                throw new ArgumentException("Invalid Book Details");
 
            await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
@@ -62,7 +62,7 @@ namespace BookServices.Controllers
                 return Ok(result);
             }
             else
-                return NotFound("Books UnAvailable");
+                throw new KeyNotFoundException("Books UnAvailable");
         }
 
         // GET: api/Books
@@ -91,13 +91,13 @@ namespace BookServices.Controllers
         public async Task<ActionResult<Book>> GetBooksById(int id)
         {
             if (id <= 0)
-                return BadRequest($"No Book Found for the Id :{id}");
+                throw new ArgumentException($"No Book Found for the Id :{id}");            
             else
             {
                 var book = await _context.Books.FindAsync(id);
                 if (book == null)
                 {
-                    return NotFound($"The Book with Id:{id} not Found. Please Try with valid Id.");
+                    throw new KeyNotFoundException($"The Book with Id:{id} not Found. Please Try with valid Id.");
                 }
                 return book;
             }
@@ -115,28 +115,12 @@ namespace BookServices.Controllers
         {
             if (id != book.Id)
             {
-                return BadRequest($"The  book Id {id} is unavailable to modified");
+                throw new ArgumentException($"The  book Id {id} is unavailable to modified");
             }
 
             _context.Entry(book).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+             await _context.SaveChangesAsync();
+             return Ok($"Successfully Modified the Book Details for Id: {id}");
         }
 
         // DELETE: api/Books/5
@@ -151,15 +135,15 @@ namespace BookServices.Controllers
         public async Task<IActionResult> DeleteBook(int id)
         {
             if (id <= 0)
-                return BadRequest("Kindly check the Id");
+                throw new ArgumentException("Kindly check the Id");
             var book = await _context.Books.FindAsync(id);
             if (book == null)
             {
-                return NotFound($"Book Unavailable for this Id {id} for deletion");
+                throw new KeyNotFoundException($"Book Unavailable for this Id {id} for deletion");
             }
              _context.Books.Remove(book);
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok($"Successfully Deleted the Book Details for Id:{id}");
         }
 
         //Method to find the Book is Exists already or not
@@ -173,7 +157,7 @@ namespace BookServices.Controllers
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null || !book.IsAvailable)
-                return BadRequest("Book unavailable");
+                throw new ArgumentException("Book unavailable");
 
             var username = User.Identity!.Name;
 
@@ -181,7 +165,7 @@ namespace BookServices.Controllers
                 .AnyAsync(r => r.BookId == id && r.Username == username);
 
             if (alreadyReserved)
-                return BadRequest("Book already reserved by you");
+                throw new ArgumentException("Book already reserved by you");
 
             book.IsAvailable = false;
             _context.Reservations.Add(new Reservation
@@ -191,7 +175,7 @@ namespace BookServices.Controllers
             });
 
             await _context.SaveChangesAsync();
-            return Ok();
+            return Ok($"Successfully Reserved by {username}");
         }
 
         [HttpGet("Easysearch",Name = "SearchBooksbyAuthor&Genre")]
@@ -216,10 +200,10 @@ namespace BookServices.Controllers
                 if(books.Any())
                 return Ok(books);
                 else 
-                 return NotFound($"The Book search with Author {author} and Genre {genre} was unavailable");
+                 throw new KeyNotFoundException($"The Book search with Author {author} and Genre {genre} was unavailable");
             }
             else
-                return BadRequest("Kindly Enter either Author or Genre to find the book");
+                throw new ArgumentException("Kindly Enter either Author or Genre to find the book");
         }
 
         
