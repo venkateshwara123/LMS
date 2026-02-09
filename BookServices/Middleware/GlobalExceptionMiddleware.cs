@@ -24,7 +24,10 @@ namespace BookServices.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception");
+                _logger.LogError(ex,"Unhandled exception | Path: {Path} | Method: {Method}",
+            context.Request.Path,
+            context.Request.Method);
+
                 await HandleExceptionAsync(context, ex);
             }
         }
