@@ -30,7 +30,11 @@ builder.Services.AddAuthentication("Bearer")
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(option=>
+{
+option.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+option.AddPolicy("MemberOnly", policy => policy.RequireRole("Member"));
+});
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

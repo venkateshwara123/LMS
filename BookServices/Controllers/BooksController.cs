@@ -40,7 +40,7 @@ namespace BookServices.Controllers
         }
 
         [HttpGet("GetAll")]
-        [Authorize(Roles ="Admin,Member")]
+        [Authorize]
         public async Task<IActionResult> SearchBooks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (pageNumber <= 0) pageNumber = 1;
