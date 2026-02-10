@@ -1,8 +1,8 @@
-﻿namespace BookServices.Models
+﻿namespace BookServices.DTOs.Response
 {
-    public class PagedResult<T>
+    public class PagedResponse<T>
     {
-        public IEnumerable<T> Items { get; set; }=new List<T>();
+        public IEnumerable<T> Items { get; set; } = new List<T>();
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public int TotalRecords { get; set; }

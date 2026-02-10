@@ -29,7 +29,7 @@ namespace MemberServicesTest
             var jwtMock = new Mock<IJwtService>();
             var controller = new AuthController(context, jwtMock.Object);
 
-            var user = new Users
+            var user = new User
             {
                 Username = "testuser",
                 PasswordHash = "hash",
@@ -55,7 +55,7 @@ namespace MemberServicesTest
         {
             // Arrange
             await using var context = CreateInMemoryContext();
-            var seededUser = new Users
+            var seededUser = new User
             {
                 Username = "loginuser",
                 PasswordHash = "pw",
@@ -65,11 +65,11 @@ namespace MemberServicesTest
             await context.SaveChangesAsync();
 
             var jwtMock = new Mock<IJwtService>();
-            jwtMock.Setup(j => j.GenerateToken(It.IsAny<Users>())).Returns("token123");
+            jwtMock.Setup(j => j.GenerateToken(It.IsAny<User>())).Returns("token123");
 
             var controller = new AuthController(context, jwtMock.Object);
 
-            var request = new Users
+            var request = new User
             {
                 Username = "loginuser",
                 PasswordHash = "pw"
@@ -89,7 +89,7 @@ namespace MemberServicesTest
             Assert.Equal("token123", tokenValue);
 
             // ensure GenerateToken was called with the persisted user
-            jwtMock.Verify(j => j.GenerateToken(It.Is<Users>(u => u.Username == "loginuser")), Times.Once);
+            jwtMock.Verify(j => j.GenerateToken(It.Is<User>(u => u.Username == "loginuser")), Times.Once);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace MemberServicesTest
             var jwtMock = new Mock<IJwtService>();
             var controller = new AuthController(context, jwtMock.Object);
 
-            var request = new Users
+            var request = new User
             {
                 Username = "nouser",
                 PasswordHash = "nopw"
@@ -113,7 +113,7 @@ namespace MemberServicesTest
             Assert.IsType<UnauthorizedResult>(result);
 
             // ensure GenerateToken was never called
-            jwtMock.Verify(j => j.GenerateToken(It.IsAny<Users>()), Times.Never);
+            jwtMock.Verify(j => j.GenerateToken(It.IsAny<User>()), Times.Never);
         }
     }
 }

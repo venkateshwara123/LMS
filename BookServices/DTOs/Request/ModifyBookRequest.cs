@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace BookServices.Models
+namespace BookServices.DTOs.Request
 {
-    public class Book
+    public class ModifyBookRequest
     {
-        [Key]
-        public int Id { get; set; }
+        [Required]
+        public int BookId { get; set; }
         [Required]
         public string Title { get; set; }
         [Required]
@@ -14,6 +13,5 @@ namespace BookServices.Models
         [Required]
         public string Genre { get; set; }
         public bool IsAvailable { get; set; } = true;
-        
     }
 }

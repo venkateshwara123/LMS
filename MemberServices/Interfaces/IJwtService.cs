@@ -4,6 +4,6 @@ namespace MemberServices.Interfaces
 {
     public interface IJwtService
     {
-        string GenerateToken(Users users);
+        string GenerateToken(User users);
     }
 }

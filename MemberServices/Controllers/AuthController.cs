@@ -1,5 +1,5 @@
 ﻿using MemberServices.Data;
-using MemberServices.DTO;
+using MemberServices.DTOs.Request;
 using MemberServices.Interfaces;
 using MemberServices.Models;
 using MemberServices.Services;
@@ -14,41 +14,51 @@ using System.Text;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly IJwtService _jwt;   
+    
+    private readonly IAuthService _auth;
 
-    public AuthController(AppDbContext context, IJwtService jwt)
+    public AuthController( IAuthService auth)
     {
-        _context = context;
-        _jwt = jwt;
+        _auth = auth;
     }
-
     [HttpPost("register", Name = "RegisterNewUser")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Register(Users user)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        _context.User.Add(user);
-        await _context.SaveChangesAsync();
-        return Ok("User Successfully Registered");
+        try
+        {
+            var response = await _auth.RegisterAsync(request);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-
-    [HttpPost("login", Name = "GenerateJWTToken")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Login(Users request)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var user = await _context.User
-            .FirstOrDefaultAsync(x =>
-                x.Username == request.Username &&
-                x.PasswordHash == request.PasswordHash);
+        try
+        {
+            var response = await _auth.LoginAsync(request);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(ex.Message);
+        }
 
-        if (user == null)
-            return Unauthorized();
-
-        var token = _jwt.GenerateToken(user);
-        return Ok(new { token });
-    }   
+    }
+    [HttpGet("user/{id}")]
+    public async Task<IActionResult> GetUserById(int id)
+    {
+        try
+        {
+            var response = await _auth.GetUserByIdAsync(id);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

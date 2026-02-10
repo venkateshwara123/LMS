@@ -1,5 +1,8 @@
 using BookServices.Data;
+using BookServices.Interfaces;
 using BookServices.Middleware;
+using BookServices.Repository;
+using BookServices.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -12,6 +15,10 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .CreateLogger();
 builder.Host.UseSerilog();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+
+
 builder.Services.AddDbContext<BookDbContext>(options =>
 options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("BookDB")));
 // Add services to the container.

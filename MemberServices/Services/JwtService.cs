@@ -16,11 +16,13 @@ namespace MemberServices.Services
         {
             _config = config;
         }
-        public string GenerateToken(Users user)
+        public string GenerateToken(User user)
         {
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role)
         };
 

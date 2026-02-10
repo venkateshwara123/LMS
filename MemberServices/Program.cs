@@ -1,5 +1,6 @@
 using MemberServices.Data;
 using MemberServices.Interfaces;
+using MemberServices.Repository;
 using MemberServices.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IJwtService,JwtService>();
 builder.Services.AddDbContext<AppDbContext>(options=>
 options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("MemberDB")));
