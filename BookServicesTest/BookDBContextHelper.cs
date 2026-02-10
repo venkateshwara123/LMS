@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookServicesTest.Tests.Helpers
 {
-    public static class DbContextHelper
+    public static class BookDBContextHelper
     {
-        public static BookDbContext CreateInMemoryContext()
+        public static BookDbContext CreateContext(string dbName)
         {
             var options = new DbContextOptionsBuilder<BookDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .UseInMemoryDatabase(databaseName: dbName)
                 .Options;
 
             return new BookDbContext(options);
