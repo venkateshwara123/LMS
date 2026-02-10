@@ -1,9 +1,6 @@
 <Solution>
   <Project Path="BookServices/BookServices.csproj" />
   <Project Path="BookServicesTest/BookServicesTest.csproj" Id="fcdb423d-0b78-470e-a692-7d315786b907" />
-  <Project Path="docker-compose.dcproj">
-    <Build />
-  </Project>
   <Project Path="MemberServices/MemberServices.csproj" />
   <Project Path="MemberServicesTest/MemberServicesTest.csproj" Id="e3603875-8ad1-4a3b-973b-138cc67e03cc" />
 </Solution>
