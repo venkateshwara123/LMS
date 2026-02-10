@@ -8,7 +8,7 @@ namespace BookServices.Interfaces
     {
          Task<Book> GetBookByAuthor(string author, string genre);
         Task<Book> AddBookDetails(Book book);
-        Task<PagedResponse<Book>> GetAllBooks(PagedRequest request);
+        Task<IEnumerable<Book>> GetAllBooks(PagedRequest request);
         Task<IEnumerable<Book>> GetMyBooks(string username);
         Task<Book> GetBooksById(int id);
         Task<bool> DeleteBook(int id);

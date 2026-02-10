@@ -26,33 +26,35 @@ namespace BookServices.Services
             _logger.LogInformation("Adding new book: {Title} by {Author}", book.Title, book.Author);
             return await _context.AddBookAsync(book);   
         }
-        public async Task<PagedResponse<Book>> GetAllBooks(PagedRequest request)
-        {            
-           var query = _context.GetAllBooksAsync().Result.AsQueryable();
+        public async Task<IEnumerable<Book>> GetAllBooks(PagedRequest request)
+        {
+            _logger.LogInformation("Fetching all books with pagination. PageNumber: {PageNumber}, PageSize: {PageSize}", request.PageNumber, request.PageSize);
+            return await _context.GetAllBooksAsync();
              
-            var totalRecords =  query.Count();
-            _logger.LogInformation("Total Books Available: {TotalRecords}", totalRecords);
-            if (totalRecords > 0)
-            {
-                var items = await query
-                    .Skip((request.PageNumber - 1) * request.PageSize)
-                    .Take(request.PageSize)
-                    .ToListAsync();
-                return  new PagedResponse<Book>
-                {
-                    Items = items,
-                    PageNumber = request.PageNumber,
-                    PageSize = request.PageSize,
-                    TotalRecords = totalRecords
-                };               
-            }
-            return new PagedResponse<Book>
-            {
-                Items = null,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalRecords = totalRecords
-            };
+
+            //var totalRecords =  query.Count();
+            //_logger.LogInformation("Total Books Available: {TotalRecords}", totalRecords);
+            //if (totalRecords > 0)
+            //{
+            //    var items = await query
+            //        .Skip((request.PageNumber - 1) * request.PageSize)
+            //        .Take(request.PageSize)
+            //        .ToListAsync();
+            //    return  new PagedResponse<Book>
+            //    {
+            //        Items = items,
+            //        PageNumber = request.PageNumber,
+            //        PageSize = request.PageSize,
+            //        TotalRecords = totalRecords
+            //    };               
+            //}
+            //return new PagedResponse<Book>
+            //{
+            //    Items = null,
+            //    PageNumber = request.PageNumber,
+            //    PageSize = request.PageSize,
+            //    TotalRecords = totalRecords
+            //};
         }
 
         public async Task<IEnumerable<Book>> GetMyBooks(string username)
