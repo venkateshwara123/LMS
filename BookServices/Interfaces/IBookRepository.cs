@@ -1,4 +1,5 @@
 ﻿using BookServices.DTOs.Request;
+using BookServices.DTOs.Response;
 using BookServices.Models;
 
 namespace BookServices.Interfaces
@@ -14,7 +15,7 @@ namespace BookServices.Interfaces
          Task ReserveAddBook(Reservation reservation);
         Task<bool> IsBookReserved(int id, string Username);
         Task<Book> GetBookByAuthor(string author, string genre);
-    
+        Task<PagedResponse<Book>> GetAllPageResponseAsync(int pageNumber, int pageSize);
 
     }
 }

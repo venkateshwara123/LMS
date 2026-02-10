@@ -1,5 +1,6 @@
 ﻿using BookServices.Data;
 using BookServices.DTOs.Request;
+using BookServices.DTOs.Response;
 using BookServices.Interfaces;
 using BookServices.Models;
 using Microsoft.EntityFrameworkCore;
@@ -63,13 +64,27 @@ namespace BookServices.Repository
                  .AnyAsync(r => r.BookId == id && r.Username == Username);
             return alreadyReserved;
         }
- 
-        //public async Task<IEnumerable<Book>> GetEasy(PagedRequest request)
-        //{
-        //    int pageNumber = request.PageNumber <= 0 ? 1 : request.PageNumber;
-        //    int pageSize = request.PageSize <= 0 ? 10 : request.PageSize;
-        //    return await _context.Books.AsNoTracking().Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-        //}
-        
+
+        public async Task<PagedResponse<Book>> GetAllPageResponseAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.Books.AsQueryable();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(b => b.Id) // IMPORTANT: always order before Skip
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResponse<Book>
+            {
+                Items = items,
+                TotalRecords = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
     }
 }
